@@ -10,6 +10,12 @@ ATK-OS is a small native app in the spirit of [G-Helper](https://github.com/seer
 it sits in the tray, shows the battery level on its icon, and talks to the mouse directly over HID.
 No telemetry, no accounts, no network.
 
+|  | ATK V HUB | ATK-OS |
+|---|---|---|
+| Download size | ~430 MB | ~45 MB |
+| Memory, idle in tray | hundreds of MB | ~5–7 MB |
+| Needs a runtime | bundled Chromium | no (native AOT) |
+
 ## Features
 
 - Battery level in the tray icon (green / orange / red, blue while charging)
@@ -67,6 +73,13 @@ Requires the .NET 8 SDK.
 ```
 dotnet build
 dotnet run --project src/AtkOs.App
+```
+
+Native release build (needs the platform C/C++ toolchain: Visual Studio Build Tools
+with "Desktop development with C++" on Windows, clang on Linux, Xcode on macOS):
+
+```
+dotnet publish src/AtkOs.App -c Release -r win-x64 -o out
 ```
 
 Project layout:

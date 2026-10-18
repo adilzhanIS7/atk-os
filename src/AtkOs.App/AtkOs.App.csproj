@@ -17,7 +17,18 @@
     <InvariantGlobalization>true</InvariantGlobalization>
     <UseSystemResourceKeys>true</UseSystemResourceKeys>
     <SatelliteResourceLanguages>en</SatelliteResourceLanguages>
+
+    <!-- `dotnet publish` produces a native executable (no .NET runtime needed). -->
+    <PublishAot>true</PublishAot>
+    <DebugType Condition="'$(Configuration)' == 'Release'">none</DebugType>
+    <CopyOutputSymbolsToPublishDirectory>false</CopyOutputSymbolsToPublishDirectory>
+    <!-- HidSharp is not annotated for trimming; it is rooted below, so its warning is expected. -->
+    <NoWarn>$(NoWarn);IL2104</NoWarn>
   </PropertyGroup>
+
+  <ItemGroup>
+    <TrimmerRootAssembly Include="HidSharp" />
+  </ItemGroup>
 
   <ItemGroup>
     <PackageReference Include="Avalonia" Version="11.3.22" />

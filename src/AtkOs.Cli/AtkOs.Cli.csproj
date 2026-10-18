@@ -9,6 +9,17 @@
     <TargetFramework>net8.0</TargetFramework>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
+    <AssemblyName>atkctl</AssemblyName>
+    <InvariantGlobalization>true</InvariantGlobalization>
+    <PublishAot>true</PublishAot>
+    <DebugType Condition="'$(Configuration)' == 'Release'">none</DebugType>
+    <CopyOutputSymbolsToPublishDirectory>false</CopyOutputSymbolsToPublishDirectory>
+    <!-- HidSharp is not annotated for trimming; it is rooted below, so its warning is expected. -->
+    <NoWarn>$(NoWarn);IL2104</NoWarn>
   </PropertyGroup>
+
+  <ItemGroup>
+    <TrimmerRootAssembly Include="HidSharp" />
+  </ItemGroup>
 
 </Project>

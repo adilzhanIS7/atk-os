@@ -27,23 +27,27 @@ jobs:
         with:
           global-json-file: global.json
 
+      - name: Install native toolchain (Linux)
+        if: runner.os == 'Linux'
+        run: sudo apt-get update && sudo apt-get install -y clang zlib1g-dev
+
       - name: Build
         run: dotnet build -c Release
 
+      # Native AOT: self-contained native executables, no .NET runtime needed.
       - name: Publish app
-        run: >
-          dotnet publish src/AtkOs.App -c Release -r ${{ matrix.rid }} --self-contained
-          -p:PublishSingleFile=true -p:IncludeNativeLibrariesForSelfExtract=true
-          -o out/${{ matrix.rid }}
+        run: dotnet publish src/AtkOs.App -c Release -r ${{ matrix.rid }} -o out/${{ matrix.rid }}
 
       - name: Publish CLI
-        run: >
-          dotnet publish src/AtkOs.Cli -c Release -r ${{ matrix.rid }} --self-contained
-          -p:PublishSingleFile=true -o out/${{ matrix.rid }}
+        run: dotnet publish src/AtkOs.Cli -c Release -r ${{ matrix.rid }} -o out/${{ matrix.rid }}
 
-      - name: Add Linux udev rule
-        if: runner.os == 'Linux'
-        run: cp packaging/linux/70-atk-os.rules out/${{ matrix.rid }}/
+      - name: Clean up and add extras
+        shell: bash
+        run: |
+          rm -f out/${{ matrix.rid }}/*.pdb out/${{ matrix.rid }}/*.dbg
+          rm -rf out/${{ matrix.rid }}/*.dSYM
+          if [ "$RUNNER_OS" = "Linux" ]; then cp packaging/linux/70-atk-os.rules out/${{ matrix.rid }}/; fi
+          ls -la out/${{ matrix.rid }}
 
       - uses: actions/upload-artifact@v4
         with:
