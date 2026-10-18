@@ -23,10 +23,13 @@ public partial class App : Application
         {
             _vm = new MainViewModel(_service);
             _vm.BatteryChanged += UpdateTray;
+            _vm.LowBattery += ShowLowBattery;
 
             CreateTray(desktop);
             if (!Program.StartInTray) ShowWindow();
             else MemoryTrimmer.Trim(5000);
+
+            if (Program.TestNotification) ShowLowBattery(15);
 
             desktop.Exit += (_, _) => _service.Dispose();
         }
@@ -60,6 +63,12 @@ public partial class App : Application
             : "ATK-OS — no mouse";
         if (_window != null) _window.Icon = _tray.Icon;
     }
+
+    private void ShowLowBattery(int percent) =>
+        NotificationPopup.Show(
+            $"Mouse battery low: {percent}%",
+            $"{(_vm is { IsConnected: true } ? _vm.ModelName : "Your mouse")} needs charging soon.",
+            Avalonia.Media.Color.Parse(percent <= 10 ? "#D64545" : "#E0A030"));
 
     private void ShowWindow()
     {

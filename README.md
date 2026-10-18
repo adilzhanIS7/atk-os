@@ -16,10 +16,17 @@ No telemetry, no accounts, no network.
 | Memory, idle in tray | hundreds of MB | ~5–7 MB |
 | Needs a runtime | bundled Chromium | no (native AOT) |
 
+## Download
+
+Get the latest build for Windows, Linux or macOS from
+[Releases](https://github.com/adilzhanIS7/atk-os/releases). No .NET installation needed.
+
 ## Features
 
 - Battery level in the tray icon (green / orange / red, blue while charging)
-- DPI levels: values, number of levels, active level
+- Low-battery popup (below 20%, once per discharge)
+- Start with system, straight to the tray
+- DPI levels: values, number of levels, active level, indicator colors
 - Polling rate (125 Hz – 8 kHz, depending on the receiver)
 - Lift-off distance, button debounce
 - Motion sync, angle snapping, ripple control
@@ -72,8 +79,12 @@ Requires the .NET 8 SDK.
 
 ```
 dotnet build
+dotnet test
 dotnet run --project src/AtkOs.App
 ```
+
+The tests run the protocol code against an emulated mouse, so no hardware is needed.
+They include packets captured from a real mouse.
 
 Native release build (needs the platform C/C++ toolchain: Visual Studio Build Tools
 with "Desktop development with C++" on Windows, clang on Linux, Xcode on macOS):
@@ -87,7 +98,10 @@ Project layout:
 - `src/AtkOs.Core` — protocol and HID transport (no UI)
 - `src/AtkOs.App` — Avalonia tray app
 - `src/AtkOs.Cli` — `atkctl`
+- `tests/AtkOs.Core.Tests` — tests with an emulated mouse
 - `docs/PROTOCOL.md` — protocol notes
+
+Releases: push a tag like `v0.2.0`; GitHub Actions builds all platforms and publishes the release.
 
 ## License
 

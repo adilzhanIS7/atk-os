@@ -18,6 +18,15 @@
       <Setter Property="Margin" Value="0,0,0,8" />
     </Style>
 
+    <!-- Round color buttons -->
+    <Style Selector="Button.swatch">
+      <Setter Property="Padding" Value="2" />
+      <Setter Property="MinWidth" Value="0" />
+      <Setter Property="MinHeight" Value="0" />
+      <Setter Property="CornerRadius" Value="20" />
+      <Setter Property="Background" Value="Transparent" />
+    </Style>
+
     <!-- Segmented buttons: a horizontal ListBox -->
     <Style Selector="ListBox.segmented">
       <Setter Property="Background" Value="Transparent" />

@@ -61,7 +61,7 @@ public static class DpiCodec
         if (enc == DpiEncoding.Table)
         {
             var values = DpiTable.Entries.Select(e => e.Dpi)
-                .Concat(DpiTable.Entries.Select(e => e.Dpi * 2).Where(v => v > 10000))
+                .Concat(DpiTable.Entries.Where(e => e.CanDouble).Select(e => e.Dpi * 2))
                 .Where(v => v <= maxDpi);
             return values.MinBy(v => Math.Abs(v - dpi));
         }
@@ -76,7 +76,7 @@ public static class DpiCodec
             bool doubled = dpi > 10000;
             if (doubled && dpi % 100 != 0) dpi += 50; // above 10000 only even-hundred steps exist
             int target = doubled ? dpi / 2 : dpi;
-            var entry = DpiTable.Entries.FirstOrDefault(e => e.Dpi == target);
+            var entry = DpiTable.Entries.FirstOrDefault(e => e.Dpi == target && (!doubled || e.CanDouble));
             if (entry.Dpi == 0) throw new ArgumentOutOfRangeException(nameof(dpi), $"{dpi} DPI is not supported by this sensor");
             return new DpiSlot(entry.Raw, entry.Raw, doubled ? TableDoubleFlags : (byte)0);
         }

@@ -45,8 +45,36 @@
               <DataTemplate x:DataType="vm:DpiSlotViewModel">
                 <Grid ColumnDefinitions="Auto,Auto,*,Auto" Margin="0,2">
                   <RadioButton GroupName="dpi" IsChecked="{Binding IsActive}" VerticalAlignment="Center" />
-                  <Ellipse Grid.Column="1" Width="12" Height="12" Fill="{Binding Color}"
-                           Margin="0,0,10,0" VerticalAlignment="Center" />
+                  <Button Grid.Column="1" Classes="swatch" Margin="0,0,10,0" VerticalAlignment="Center"
+                          ToolTip.Tip="DPI indicator color"
+                          AutomationProperties.Name="{Binding Label, StringFormat='Color of {0}'}">
+                    <Ellipse Width="14" Height="14" Fill="{Binding Color}" />
+                    <Button.Flyout>
+                      <Flyout Placement="Bottom">
+                        <StackPanel Spacing="8" Width="200">
+                          <ItemsControl ItemsSource="{Binding Palette}">
+                            <ItemsControl.ItemsPanel>
+                              <ItemsPanelTemplate>
+                                <UniformGrid Columns="5" />
+                              </ItemsPanelTemplate>
+                            </ItemsControl.ItemsPanel>
+                            <ItemsControl.ItemTemplate>
+                              <DataTemplate x:DataType="vm:ColorSwatch">
+                                <Button Classes="swatch" Command="{Binding Command}" Margin="3"
+                                        AutomationProperties.Name="{Binding Hex}" ToolTip.Tip="{Binding Hex}">
+                                  <Ellipse Width="24" Height="24" Fill="{Binding Brush}" />
+                                </Button>
+                              </DataTemplate>
+                            </ItemsControl.ItemTemplate>
+                          </ItemsControl>
+                          <Grid ColumnDefinitions="*,Auto">
+                            <TextBox Text="{Binding Hex}" Watermark="#RRGGBB" MaxLength="7" />
+                            <Button Grid.Column="1" Content="Set" Margin="6,0,0,0" Command="{Binding ApplyHexCommand}" />
+                          </Grid>
+                        </StackPanel>
+                      </Flyout>
+                    </Button.Flyout>
+                  </Button>
                   <TextBlock Grid.Column="2" Text="{Binding Label}" VerticalAlignment="Center" />
                   <NumericUpDown Grid.Column="3" Width="150" FormatString="0"
                                  Value="{Binding Dpi}"
@@ -105,19 +133,34 @@
 
           <Grid ColumnDefinitions="*,Auto">
             <TextBlock Text="Motion sync" VerticalAlignment="Center" />
-            <ToggleSwitch Grid.Column="1" IsChecked="{Binding MotionSync}" OnContent="{x:Null}" OffContent="{x:Null}" MinWidth="0" />
+            <ToggleSwitch Grid.Column="1" AutomationProperties.Name="Motion sync" IsChecked="{Binding MotionSync}" OnContent="{x:Null}" OffContent="{x:Null}" MinWidth="0" />
           </Grid>
           <Grid ColumnDefinitions="*,Auto">
             <TextBlock Text="Angle snapping" VerticalAlignment="Center" />
-            <ToggleSwitch Grid.Column="1" IsChecked="{Binding AngleSnapping}" OnContent="{x:Null}" OffContent="{x:Null}" MinWidth="0" />
+            <ToggleSwitch Grid.Column="1" AutomationProperties.Name="Angle snapping" IsChecked="{Binding AngleSnapping}" OnContent="{x:Null}" OffContent="{x:Null}" MinWidth="0" />
           </Grid>
           <Grid ColumnDefinitions="*,Auto">
             <TextBlock Text="Ripple control" VerticalAlignment="Center" />
-            <ToggleSwitch Grid.Column="1" IsChecked="{Binding RippleControl}" OnContent="{x:Null}" OffContent="{x:Null}" MinWidth="0" />
+            <ToggleSwitch Grid.Column="1" AutomationProperties.Name="Ripple control" IsChecked="{Binding RippleControl}" OnContent="{x:Null}" OffContent="{x:Null}" MinWidth="0" />
           </Grid>
         </StackPanel>
       </Border>
     </StackPanel>
+
+    <!-- App settings: available even without a mouse -->
+    <Border Classes="card">
+      <StackPanel Spacing="8">
+        <TextBlock Classes="title" Text="App" />
+        <Grid ColumnDefinitions="*,Auto" IsVisible="{Binding AutostartSupported}">
+          <TextBlock Text="Start with system (in tray)" VerticalAlignment="Center" />
+          <ToggleSwitch Grid.Column="1" AutomationProperties.Name="Start with system" IsChecked="{Binding StartWithSystem}" OnContent="{x:Null}" OffContent="{x:Null}" MinWidth="0" />
+        </Grid>
+        <Grid ColumnDefinitions="*,Auto">
+          <TextBlock Text="{Binding LowBatteryLabel}" VerticalAlignment="Center" />
+          <ToggleSwitch Grid.Column="1" AutomationProperties.Name="Low battery alert" IsChecked="{Binding LowBatteryAlert}" OnContent="{x:Null}" OffContent="{x:Null}" MinWidth="0" />
+        </Grid>
+      </StackPanel>
+    </Border>
 
     <TextBlock Text="{Binding Status}" Foreground="#6B7280" FontSize="11"
                IsVisible="{Binding IsConnected}" HorizontalAlignment="Center" />

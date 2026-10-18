@@ -7,7 +7,7 @@ namespace AtkOs.Core.Hid;
 /// Talks to the vendor-defined HID collection of a Compx mouse or receiver:
 /// sends a packet, waits for the reply with the same command ID.
 /// </summary>
-public sealed class CompxTransport : IDisposable
+public sealed class CompxTransport : ICompxTransport
 {
     private readonly HidStream _stream;
     private readonly byte[] _readBuffer;

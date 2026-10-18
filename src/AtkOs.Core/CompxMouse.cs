@@ -33,9 +33,9 @@ public enum PerformanceToggle
 }
 
 /// <summary>High-level API for Compx mice.</summary>
-public sealed class CompxMouse(CompxTransport transport)
+public sealed class CompxMouse(ICompxTransport transport)
 {
-    public CompxTransport Transport { get; } = transport;
+    public ICompxTransport Transport { get; } = transport;
 
     private CompxPacket Send(CompxCommand cmd, ushort address = 0, byte len = 0)
     {

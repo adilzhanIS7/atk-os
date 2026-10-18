@@ -29,6 +29,7 @@ public partial class MainViewModel : ObservableObject
     public MainViewModel(MouseService service)
     {
         _service = service;
+        _lowBatteryAlert = _settings.LowBatteryAlert;
         _timer.Tick += async (_, _) => await TickAsync();
         _timer.Interval = SearchInterval;
         _timer.Start();
@@ -102,10 +103,14 @@ public partial class MainViewModel : ObservableObject
         for (int i = 0; i < (int)SlotCount; i++)
         {
             var (x, _) = DpiCodec.Decode(_allSlots[i], id.DpiEncoding);
-            var c = _allColors[i];
-            DpiSlots.Add(new DpiSlotViewModel(this, i, x, i == active,
-                new SolidColorBrush(Color.FromRgb(c.R, c.G, c.B))));
+            DpiSlots.Add(new DpiSlotViewModel(this, i, x, i == active, _allColors[i]));
         }
+    }
+
+    internal async Task ApplyColorAsync(int index, RgbColor color)
+    {
+        _allColors[index] = color;
+        await ApplyAsync(m => m.SetDpiColor(index, color));
     }
 
     // ---------- Polling rate ----------
@@ -147,6 +152,54 @@ public partial class MainViewModel : ObservableObject
     private void Toggle(PerformanceToggle t, bool on)
     {
         if (!_loading) _ = ApplyAsync(m => m.SetToggle(t, on));
+    }
+
+    // ---------- App settings ----------
+
+    private readonly AppSettings _settings = SettingsStore.Load();
+    private bool _lowBatteryNotified;
+
+    /// <summary>Battery dropped below the alert threshold (once per discharge).</summary>
+    public event Action<int>? LowBattery;
+
+    public bool AutostartSupported => Autostart.IsSupported;
+    public string LowBatteryLabel => $"Low battery alert (below {_settings.LowBatteryThreshold}%)";
+
+    [ObservableProperty] private bool _startWithSystem = Autostart.IsEnabled();
+    [ObservableProperty] private bool _lowBatteryAlert;
+
+    partial void OnStartWithSystemChanged(bool value)
+    {
+        try
+        {
+            Autostart.SetEnabled(value);
+        }
+        catch (Exception e)
+        {
+            Status = $"Autostart: {e.Message}";
+            SetProperty(ref _startWithSystem, !value, nameof(StartWithSystem));
+        }
+    }
+
+    partial void OnLowBatteryAlertChanged(bool value)
+    {
+        _settings.LowBatteryAlert = value;
+        SettingsStore.Save(_settings);
+    }
+
+    private void CheckLowBattery(BatteryInfo b)
+    {
+        int threshold = _settings.LowBatteryThreshold;
+        if (b.Charging || b.Percent > threshold + 5)
+        {
+            _lowBatteryNotified = false;
+            return;
+        }
+        if (_settings.LowBatteryAlert && !_lowBatteryNotified && b.Percent <= threshold)
+        {
+            _lowBatteryNotified = true;
+            LowBattery?.Invoke(b.Percent);
+        }
     }
 
     // ---------- Device I/O ----------
@@ -225,6 +278,7 @@ public partial class MainViewModel : ObservableObject
         BatteryPercent = b.Percent;
         Charging = b.Charging;
         if (changed) BatteryChanged?.Invoke();
+        CheckLowBattery(b);
     }
 
     private void Load(MouseSnapshot s)
