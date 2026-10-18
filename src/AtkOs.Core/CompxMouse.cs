@@ -33,6 +33,38 @@ public sealed class CompxMouse(CompxTransport transport)
     public byte[] ReadEeprom(ushort address, byte length = CompxPacket.MaxData) =>
         Send(CompxCommand.GetEeprom, address, length).Data[..length].ToArray();
 
+    /// <summary>Writes up to 10 bytes of EEPROM, then reads them back to verify.</summary>
+    public void WriteEeprom(ushort address, ReadOnlySpan<byte> data)
+    {
+        if (data.Length is 0 or > CompxPacket.MaxData)
+            throw new ArgumentException($"1..{CompxPacket.MaxData} bytes expected", nameof(data));
+
+        var req = new CompxPacket(CompxCommand.SetEeprom, address, (byte)data.Length);
+        req.SetData(data);
+        var resp = Transport.Transfer(req);
+        if (resp.Status != 0)
+            throw new InvalidOperationException($"Write to {address} failed, status {resp.Status}");
+
+        var check = ReadEeprom(address, (byte)data.Length);
+        if (!check.AsSpan().SequenceEqual(data))
+            throw new InvalidOperationException(
+                $"Verify failed at {address}: wrote {Convert.ToHexString(data)}, read {Convert.ToHexString(check)}");
+    }
+
+    /// <summary>Sets the color of DPI slot 0..7. The neighbouring slot in the same chunk is kept.</summary>
+    public void SetDpiColor(int slot, RgbColor color)
+    {
+        if (slot is < 0 or > 7) throw new ArgumentOutOfRangeException(nameof(slot));
+        var address = (ushort)(EepromAddress.DpiColor1 + 8 * (slot / 2));
+        var chunk = ReadEeprom(address, 8);
+        int offset = 4 * (slot % 2);
+        chunk[offset] = color.R;
+        chunk[offset + 1] = color.G;
+        chunk[offset + 2] = color.B;
+        chunk[offset + 3] = (byte)(0x55 - (color.R + color.G + color.B));
+        WriteEeprom(address, chunk);
+    }
+
     /// <summary>For a receiver: is the mouse switched on and paired?</summary>
     public bool IsOnline() => Send(CompxCommand.GetWirelessMouseOnline)[0] == 1;
 

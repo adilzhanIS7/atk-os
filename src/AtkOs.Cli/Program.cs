@@ -3,10 +3,11 @@ using AtkOs.Core.Devices;
 using AtkOs.Core.Hid;
 using AtkOs.Core.Protocol;
 
-// atkctl — read-only diagnostic tool for ATK (Compx) mice.
-//   atkctl list              list detected devices
-//   atkctl info [-v]         battery, firmware, DPI, polling rate, ...
-//   atkctl dump [file] [-v]  back up EEPROM (addresses 0..511) to a file
+// atkctl — diagnostic tool for ATK (Compx) mice.
+//   atkctl list                  list detected devices
+//   atkctl info [-v]             battery, firmware, DPI, polling rate, ...
+//   atkctl dump [file] [-v]      back up EEPROM (addresses 0..511) to a file
+//   atkctl color <slot> <RRGGBB> set DPI indicator color for a slot (1-8)
 
 var verbose = args.Contains("-v") || args.Contains("--verbose");
 var positional = args.Where(a => !a.StartsWith('-')).ToArray();
@@ -19,6 +20,7 @@ try
         "list" => List(),
         "info" => Info(),
         "dump" => Dump(positional.ElementAtOrDefault(1) ?? $"eeprom-{DateTime.Now:yyyyMMdd-HHmmss}.bin"),
+        "color" when positional.Length == 3 => Color(int.Parse(positional[1]) - 1, positional[2]),
         _ => Usage(),
     };
 }
@@ -30,8 +32,23 @@ catch (Exception e)
 
 int Usage()
 {
-    Console.WriteLine("usage: atkctl [list | info | dump [file]] [-v]");
+    Console.WriteLine("usage: atkctl [list | info | dump [file] | color <slot 1-8> <RRGGBB>] [-v]");
     return 2;
+}
+
+int Color(int slot, string hex)
+{
+    var rgb = Convert.FromHexString(hex.TrimStart('#'));
+    if (rgb.Length != 3) throw new ArgumentException("Color must be RRGGBB");
+
+    var mouse = Open();
+    using var _ = mouse.Transport;
+    mouse.Handshake();
+
+    var before = mouse.GetDpiColors()[slot];
+    mouse.SetDpiColor(slot, new RgbColor(rgb[0], rgb[1], rgb[2]));
+    Console.WriteLine($"DPI slot {slot + 1} color: {before} -> {mouse.GetDpiColors()[slot]} (verified)");
+    return 0;
 }
 
 int List()
