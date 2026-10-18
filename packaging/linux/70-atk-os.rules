@@ -1,0 +1,8 @@
+# Lets the logged-in user talk to ATK / VXE / VGN mice without root.
+# Install:
+#   sudo cp 70-atk-os.rules /etc/udev/rules.d/
+#   sudo udevadm control --reload-rules && sudo udevadm trigger
+# Then re-plug the receiver.
+
+KERNEL=="hidraw*", ATTRS{idVendor}=="373b", TAG+="uaccess"
+KERNEL=="hidraw*", ATTRS{idVendor}=="3554", TAG+="uaccess"

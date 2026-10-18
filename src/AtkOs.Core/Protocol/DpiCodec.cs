@@ -54,6 +54,21 @@ public static class DpiCodec
         return (x, y);
     }
 
+    /// <summary>The closest DPI value the sensor can actually store.</summary>
+    public static int Nearest(int dpi, DpiEncoding enc, int maxDpi)
+    {
+        dpi = Math.Clamp(dpi, 50, maxDpi);
+        if (enc == DpiEncoding.Table)
+        {
+            var values = DpiTable.Entries.Select(e => e.Dpi)
+                .Concat(DpiTable.Entries.Select(e => e.Dpi * 2).Where(v => v > 10000))
+                .Where(v => v <= maxDpi);
+            return values.MinBy(v => Math.Abs(v - dpi));
+        }
+        int step = enc == DpiEncoding.Step10 && dpi <= 10000 ? 10 : dpi > 30000 ? 100 : 50;
+        return Math.Clamp((int)Math.Round(dpi / (double)step) * step, step, maxDpi);
+    }
+
     public static DpiSlot Encode(int dpi, DpiEncoding enc)
     {
         if (enc == DpiEncoding.Table)

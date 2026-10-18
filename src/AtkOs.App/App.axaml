@@ -1,0 +1,44 @@
+<Application xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             x:Class="AtkOs.App.App"
+             RequestedThemeVariant="Dark">
+  <Application.Styles>
+    <FluentTheme />
+
+    <!-- Card container -->
+    <Style Selector="Border.card">
+      <Setter Property="Background" Value="#1E1F22" />
+      <Setter Property="CornerRadius" Value="10" />
+      <Setter Property="Padding" Value="14" />
+    </Style>
+    <Style Selector="TextBlock.title">
+      <Setter Property="FontSize" Value="13" />
+      <Setter Property="FontWeight" Value="SemiBold" />
+      <Setter Property="Foreground" Value="#9DA3AE" />
+      <Setter Property="Margin" Value="0,0,0,8" />
+    </Style>
+
+    <!-- Segmented buttons: a horizontal ListBox -->
+    <Style Selector="ListBox.segmented">
+      <Setter Property="Background" Value="Transparent" />
+      <Setter Property="ItemsPanel">
+        <ItemsPanelTemplate>
+          <UniformGrid Rows="1" />
+        </ItemsPanelTemplate>
+      </Setter>
+    </Style>
+    <Style Selector="ListBox.segmented ListBoxItem">
+      <Setter Property="Margin" Value="2" />
+      <Setter Property="Padding" Value="0,8" />
+      <Setter Property="CornerRadius" Value="6" />
+      <Setter Property="Background" Value="#2B2D31" />
+      <Setter Property="HorizontalContentAlignment" Value="Center" />
+    </Style>
+    <Style Selector="ListBox.segmented ListBoxItem:selected /template/ ContentPresenter">
+      <Setter Property="Background" Value="#3A6FD8" />
+    </Style>
+    <Style Selector="ListBox.segmented ListBoxItem:selected:pointerover /template/ ContentPresenter">
+      <Setter Property="Background" Value="#4A7FE8" />
+    </Style>
+  </Application.Styles>
+</Application>

@@ -1,0 +1,51 @@
+name: build
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+jobs:
+  build:
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - os: windows-latest
+            rid: win-x64
+          - os: ubuntu-latest
+            rid: linux-x64
+          - os: macos-latest
+            rid: osx-arm64
+    runs-on: ${{ matrix.os }}
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-dotnet@v4
+        with:
+          global-json-file: global.json
+
+      - name: Build
+        run: dotnet build -c Release
+
+      - name: Publish app
+        run: >
+          dotnet publish src/AtkOs.App -c Release -r ${{ matrix.rid }} --self-contained
+          -p:PublishSingleFile=true -p:IncludeNativeLibrariesForSelfExtract=true
+          -o out/${{ matrix.rid }}
+
+      - name: Publish CLI
+        run: >
+          dotnet publish src/AtkOs.Cli -c Release -r ${{ matrix.rid }} --self-contained
+          -p:PublishSingleFile=true -o out/${{ matrix.rid }}
+
+      - name: Add Linux udev rule
+        if: runner.os == 'Linux'
+        run: cp packaging/linux/70-atk-os.rules out/${{ matrix.rid }}/
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: atk-os-${{ matrix.rid }}
+          path: out/${{ matrix.rid }}

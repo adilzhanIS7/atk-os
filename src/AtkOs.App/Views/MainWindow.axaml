@@ -1,0 +1,125 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:vm="using:AtkOs.App.ViewModels"
+        x:Class="AtkOs.App.Views.MainWindow"
+        x:DataType="vm:MainViewModel"
+        Title="ATK-OS"
+        Width="440" SizeToContent="Height"
+        CanResize="False"
+        WindowStartupLocation="CenterScreen"
+        Background="#131416">
+
+  <StackPanel Margin="14" Spacing="10">
+
+    <!-- Header: model, link, battery -->
+    <Border Classes="card">
+      <Grid ColumnDefinitions="*,Auto">
+        <StackPanel Spacing="2">
+          <TextBlock Text="{Binding ModelName}" FontSize="18" FontWeight="SemiBold" />
+          <TextBlock Text="{Binding Details}" Foreground="#9DA3AE" FontSize="12"
+                     IsVisible="{Binding IsConnected}" />
+          <TextBlock Text="{Binding Status}" Foreground="#9DA3AE" FontSize="12"
+                     IsVisible="{Binding !IsConnected}" />
+        </StackPanel>
+        <TextBlock Grid.Column="1" Text="{Binding BatteryText}" FontSize="22" FontWeight="Bold"
+                   VerticalAlignment="Center" />
+      </Grid>
+    </Border>
+
+    <StackPanel Spacing="10" IsEnabled="{Binding IsConnected}">
+
+      <!-- DPI -->
+      <Border Classes="card">
+        <StackPanel Spacing="6">
+          <Grid ColumnDefinitions="*,Auto">
+            <TextBlock Classes="title" Text="DPI" />
+            <StackPanel Grid.Column="1" Orientation="Horizontal" Spacing="8">
+              <TextBlock Text="Levels" Foreground="#9DA3AE" VerticalAlignment="Center" FontSize="12" />
+              <NumericUpDown Value="{Binding SlotCount}" Minimum="1" Maximum="8" Increment="1"
+                             FormatString="0" Width="110" />
+            </StackPanel>
+          </Grid>
+
+          <ItemsControl ItemsSource="{Binding DpiSlots}">
+            <ItemsControl.ItemTemplate>
+              <DataTemplate x:DataType="vm:DpiSlotViewModel">
+                <Grid ColumnDefinitions="Auto,Auto,*,Auto" Margin="0,2">
+                  <RadioButton GroupName="dpi" IsChecked="{Binding IsActive}" VerticalAlignment="Center" />
+                  <Ellipse Grid.Column="1" Width="12" Height="12" Fill="{Binding Color}"
+                           Margin="0,0,10,0" VerticalAlignment="Center" />
+                  <TextBlock Grid.Column="2" Text="{Binding Label}" VerticalAlignment="Center" />
+                  <NumericUpDown Grid.Column="3" Width="150" FormatString="0"
+                                 Value="{Binding Dpi}"
+                                 Minimum="50"
+                                 Maximum="{Binding $parent[Window].((vm:MainViewModel)DataContext).MaxDpi}"
+                                 Increment="{Binding $parent[Window].((vm:MainViewModel)DataContext).DpiStep}" />
+                </Grid>
+              </DataTemplate>
+            </ItemsControl.ItemTemplate>
+          </ItemsControl>
+        </StackPanel>
+      </Border>
+
+      <!-- Polling rate -->
+      <Border Classes="card">
+        <StackPanel>
+          <TextBlock Classes="title" Text="Polling rate, Hz" />
+          <ListBox Classes="segmented" ItemsSource="{Binding ReportRates}" SelectedItem="{Binding SelectedRate}">
+            <ListBox.ItemTemplate>
+              <DataTemplate x:DataType="vm:RateOption">
+                <TextBlock Text="{Binding Label}" />
+              </DataTemplate>
+            </ListBox.ItemTemplate>
+          </ListBox>
+        </StackPanel>
+      </Border>
+
+      <!-- Sensor -->
+      <Border Classes="card">
+        <StackPanel Spacing="8">
+          <TextBlock Classes="title" Text="Sensor" />
+
+          <Grid ColumnDefinitions="*,200">
+            <TextBlock Text="Lift-off distance" VerticalAlignment="Center" />
+            <ListBox Grid.Column="1" Classes="segmented" ItemsSource="{Binding LodOptions}"
+                     SelectedItem="{Binding SelectedLod}">
+              <ListBox.ItemTemplate>
+                <DataTemplate x:DataType="vm:LodOption">
+                  <TextBlock Text="{Binding Label}" />
+                </DataTemplate>
+              </ListBox.ItemTemplate>
+            </ListBox>
+          </Grid>
+
+          <Grid ColumnDefinitions="*,200">
+            <TextBlock Text="Button debounce" VerticalAlignment="Center" />
+            <ComboBox Grid.Column="1" HorizontalAlignment="Stretch"
+                      ItemsSource="{Binding DebounceOptions}" SelectedItem="{Binding SelectedDebounce}">
+              <ComboBox.ItemTemplate>
+                <DataTemplate x:DataType="vm:DebounceOption">
+                  <TextBlock Text="{Binding Label}" />
+                </DataTemplate>
+              </ComboBox.ItemTemplate>
+            </ComboBox>
+          </Grid>
+
+          <Grid ColumnDefinitions="*,Auto">
+            <TextBlock Text="Motion sync" VerticalAlignment="Center" />
+            <ToggleSwitch Grid.Column="1" IsChecked="{Binding MotionSync}" OnContent="{x:Null}" OffContent="{x:Null}" MinWidth="0" />
+          </Grid>
+          <Grid ColumnDefinitions="*,Auto">
+            <TextBlock Text="Angle snapping" VerticalAlignment="Center" />
+            <ToggleSwitch Grid.Column="1" IsChecked="{Binding AngleSnapping}" OnContent="{x:Null}" OffContent="{x:Null}" MinWidth="0" />
+          </Grid>
+          <Grid ColumnDefinitions="*,Auto">
+            <TextBlock Text="Ripple control" VerticalAlignment="Center" />
+            <ToggleSwitch Grid.Column="1" IsChecked="{Binding RippleControl}" OnContent="{x:Null}" OffContent="{x:Null}" MinWidth="0" />
+          </Grid>
+        </StackPanel>
+      </Border>
+    </StackPanel>
+
+    <TextBlock Text="{Binding Status}" Foreground="#6B7280" FontSize="11"
+               IsVisible="{Binding IsConnected}" HorizontalAlignment="Center" />
+  </StackPanel>
+</Window>
