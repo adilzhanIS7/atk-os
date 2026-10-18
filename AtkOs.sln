@@ -1,0 +1,34 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.0.31903.59
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{A97F9092-B29D-407E-90A6-18D00DA23843}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AtkOs.Core", "src\AtkOs.Core\AtkOs.Core.csproj", "{5024D30E-17BE-4FD9-8BEF-A30A6C4CD72B}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AtkOs.Cli", "src\AtkOs.Cli\AtkOs.Cli.csproj", "{A17D3108-A587-4CAE-A10F-25633822A7EA}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{5024D30E-17BE-4FD9-8BEF-A30A6C4CD72B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{5024D30E-17BE-4FD9-8BEF-A30A6C4CD72B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{5024D30E-17BE-4FD9-8BEF-A30A6C4CD72B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{5024D30E-17BE-4FD9-8BEF-A30A6C4CD72B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A17D3108-A587-4CAE-A10F-25633822A7EA}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A17D3108-A587-4CAE-A10F-25633822A7EA}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A17D3108-A587-4CAE-A10F-25633822A7EA}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A17D3108-A587-4CAE-A10F-25633822A7EA}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{5024D30E-17BE-4FD9-8BEF-A30A6C4CD72B} = {A97F9092-B29D-407E-90A6-18D00DA23843}
+		{A17D3108-A587-4CAE-A10F-25633822A7EA} = {A97F9092-B29D-407E-90A6-18D00DA23843}
+	EndGlobalSection
+EndGlobal
