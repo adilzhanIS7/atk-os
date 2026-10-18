@@ -72,7 +72,9 @@ public sealed class CompxTransport : IDisposable
                 {
                     break;
                 }
-                if (n < CompxPacket.Size + 1) continue;
+                // On Linux/macOS one handle receives every report of the interface
+                // (mouse movement etc.), so keep only the command channel.
+                if (n < CompxPacket.Size + 1 || _readBuffer[0] != CompxPacket.ReportId) continue;
 
                 Log?.Invoke($"RX {Convert.ToHexString(_readBuffer, 0, n)}");
                 var response = new CompxPacket(_readBuffer.AsSpan(1, CompxPacket.Size).ToArray());
