@@ -1,0 +1,22 @@
+# yaml-language-server: $schema=https://aka.ms/winget-manifest.defaultLocale.1.6.0.schema.json
+PackageIdentifier: Adilzhan.ATK-OS
+PackageVersion: 0.1.1
+PackageLocale: en-US
+Publisher: Adilzhan
+PublisherUrl: https://github.com/adilzhanIS7
+PackageName: ATK-OS
+PackageUrl: https://github.com/adilzhanIS7/atk-os
+License: MIT
+LicenseUrl: https://github.com/adilzhanIS7/atk-os/blob/main/LICENSE
+ShortDescription: Lightweight open-source settings app for ATK / VXE / VGN mice
+Description: Unofficial alternative to ATK V HUB. Tray app with battery level, DPI, polling rate, lift-off distance and other mouse settings. No telemetry.
+Tags:
+  - mouse
+  - gaming-mouse
+  - atk
+  - vxe
+  - vgn
+  - tray
+ReleaseNotesUrl: https://github.com/adilzhanIS7/atk-os/releases/tag/v0.1.1
+ManifestType: defaultLocale
+ManifestVersion: 1.6.0
