@@ -10,6 +10,8 @@
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
     <AssemblyName>atkctl</AssemblyName>
+    <AssemblyTitle>ATK-OS command-line tool</AssemblyTitle>
+    <ApplicationIcon>../AtkOs.App/Assets/icon.ico</ApplicationIcon>
     <InvariantGlobalization>true</InvariantGlobalization>
     <PublishAot>true</PublishAot>
     <DebugType Condition="'$(Configuration)' == 'Release'">none</DebugType>

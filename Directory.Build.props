@@ -1,6 +1,11 @@
 <Project>
   <PropertyGroup>
-    <Version>0.1.0</Version>
+    <Version>0.1.1</Version>
     <Product>ATK-OS</Product>
+    <Company>ATK-OS contributors</Company>
+    <Authors>ATK-OS contributors</Authors>
+    <Copyright>Copyright (c) 2026 Adilzhan. MIT License.</Copyright>
+    <Description>Open-source settings app for ATK / VXE / VGN mice</Description>
+    <RepositoryUrl>https://github.com/adilzhanIS7/atk-os</RepositoryUrl>
   </PropertyGroup>
 </Project>

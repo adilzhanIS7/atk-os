@@ -52,6 +52,8 @@ Aliyun SDK, локальный express/socket.io-сервер.
   палитра цветов DPI.
 - ✅ Тесты с эмулятором мыши (`tests/`), включая пакеты, снятые с настоящей мыши.
 - ✅ Релизы: тег `v*` → GitHub Actions собирает 3 платформы и публикует Release.
+- ✅ Иконка (`assets/icon.svg`), одна копия приложения (mutex + named pipe), метаданные exe.
+- TODO: подпись exe (SignPath Foundation — бесплатно для open source, нужна заявка владельца репо).
 - TODO: проверить палитру цветов на живой мыши (во время разработки мышь спала).
 - TODO: проверить на Linux и macOS (нужны тестеры).
 - DPI-ступени, текущий DPI, частота опроса, LOD, debounce, motion sync, angle snapping.

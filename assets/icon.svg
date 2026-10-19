@@ -1,0 +1,42 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="512" height="512">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#5E8EF2"/>
+      <stop offset="1" stop-color="#2643A6"/>
+    </linearGradient>
+    <linearGradient id="body" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#FFFFFF"/>
+      <stop offset="1" stop-color="#DCE5F7"/>
+    </linearGradient>
+    <linearGradient id="wheel" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#4A7FE8"/>
+      <stop offset="1" stop-color="#2643A6"/>
+    </linearGradient>
+    <radialGradient id="glow" cx="0.3" cy="0.15" r="0.8">
+      <stop offset="0" stop-color="#FFFFFF" stop-opacity="0.22"/>
+      <stop offset="1" stop-color="#FFFFFF" stop-opacity="0"/>
+    </radialGradient>
+    <clipPath id="bodyClip">
+      <path id="bodyPath" d="M256 86 C346 86 372 146 372 228 L372 304 C372 388 322 430 256 430 C190 430 140 388 140 304 L140 228 C140 146 166 86 256 86 Z"/>
+    </clipPath>
+    <filter id="shadow" x="-30%" y="-30%" width="160%" height="160%">
+      <feDropShadow dx="0" dy="14" stdDeviation="16" flood-color="#0B1640" flood-opacity="0.45"/>
+    </filter>
+  </defs>
+
+  <rect x="16" y="16" width="480" height="480" rx="112" fill="url(#bg)"/>
+  <rect x="16" y="16" width="480" height="480" rx="112" fill="url(#glow)"/>
+
+  <!-- mouse body -->
+  <path filter="url(#shadow)" fill="url(#body)"
+        d="M256 86 C346 86 372 146 372 228 L372 304 C372 388 322 430 256 430 C190 430 140 388 140 304 L140 228 C140 146 166 86 256 86 Z"/>
+  <!-- button split -->
+  <g clip-path="url(#bodyClip)" stroke="#2643A6" stroke-width="9" opacity="0.5" fill="none">
+    <path d="M256 70 L256 214"/>
+    <path d="M120 210 Q256 240 392 210"/>
+  </g>
+  <!-- wheel -->
+  <rect x="234" y="124" width="44" height="76" rx="22" fill="url(#wheel)"/>
+  <!-- DPI indicator -->
+  <circle cx="256" cy="282" r="13" fill="#2EC27E"/>
+</svg>

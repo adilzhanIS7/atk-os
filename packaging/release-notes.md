@@ -1,5 +1,13 @@
-First public release of ATK-OS — a lightweight, open-source alternative to ATK V HUB.
+ATK-OS — a lightweight, open-source alternative to ATK V HUB.
 Unofficial project, not affiliated with ATK, VXE or VGN.
+
+### New in 0.1.1
+- App icon
+- Only one copy runs at a time; launching the exe again opens the existing window
+  (before, every launch added another tray icon)
+- Tray shows the app icon while no mouse is connected
+- File details (description, version, copyright) in the Windows executables
+- `SHA256SUMS.txt` with checksums of all downloads
 
 ### What it does
 - Battery level on the tray icon, low-battery popup
@@ -19,6 +27,9 @@ Every change is read back from the mouse to make sure it was stored. Firmware up
 | macOS (Apple Silicon) | `atk-os-*-osx-arm64.tar.gz` → run `atk-os` |
 
 No .NET installation needed: the apps are native executables.
+
+**Windows:** the build is not code-signed yet. If SmartScreen says "Windows protected your PC",
+click **More info → Run anyway**. Checksums are in `SHA256SUMS.txt`.
 
 **macOS:** the build is not signed. If macOS refuses to open it, run
 `xattr -dr com.apple.quarantine <folder>` once.

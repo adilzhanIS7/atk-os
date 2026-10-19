@@ -1,3 +1,5 @@
+<p align="center"><img src="assets/icon.png" width="128" alt="ATK-OS icon"></p>
+
 # ATK-OS
 
 Lightweight, open-source configuration tool for ATK / VXE / VGN gaming mice —
@@ -20,6 +22,21 @@ No telemetry, no accounts, no network.
 
 Get the latest build for Windows, Linux or macOS from
 [Releases](https://github.com/adilzhanIS7/atk-os/releases). No .NET installation needed.
+
+Only one copy runs at a time: launching `atk-os` again just opens the window of the running copy.
+
+### "Windows protected your PC"
+
+The builds are not code-signed yet, so on first launch Windows SmartScreen may show this warning
+for a new download. Click **More info → Run anyway**. The app is built from this repository by
+GitHub Actions; you can compare the file with `SHA256SUMS.txt` from the release:
+
+```
+Get-FileHash .\atk-os-v0.1.1-win-x64.zip
+```
+
+The warning goes away once the release has been downloaded enough times or after the builds are
+signed (planned through the free [SignPath Foundation](https://signpath.org) program for open-source projects).
 
 ## Features
 

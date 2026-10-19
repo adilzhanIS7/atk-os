@@ -5,6 +5,8 @@ using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Controls.ApplicationLifetimes;
 using Avalonia.Markup.Xaml;
+using Avalonia.Platform;
+using Avalonia.Threading;
 
 namespace AtkOs.App;
 
@@ -14,6 +16,7 @@ public partial class App : Application
     private MainViewModel? _vm;
     private MainWindow? _window;
     private TrayIcon? _tray;
+    private WindowIcon? _appIcon;
 
     public override void Initialize() => AvaloniaXamlLoader.Load(this);
 
@@ -25,7 +28,10 @@ public partial class App : Application
             _vm.BatteryChanged += UpdateTray;
             _vm.LowBattery += ShowLowBattery;
 
+            _appIcon = new WindowIcon(AssetLoader.Open(new Uri("avares://atk-os/Assets/icon.png")));
             CreateTray(desktop);
+            // A second launch of the exe opens this copy's window instead of starting another one.
+            Program.Instance?.Listen(() => Dispatcher.UIThread.Post(ShowWindow));
             if (!Program.StartInTray) ShowWindow();
             else MemoryTrimmer.Trim(5000);
 
@@ -45,7 +51,7 @@ public partial class App : Application
 
         _tray = new TrayIcon
         {
-            Icon = TrayIconRenderer.Render(null, false),
+            Icon = _appIcon,
             ToolTipText = "ATK-OS",
             Menu = [open, new NativeMenuItemSeparator(), quit],
             IsVisible = true,
@@ -57,11 +63,13 @@ public partial class App : Application
     private void UpdateTray()
     {
         if (_tray == null || _vm == null) return;
-        _tray.Icon = TrayIconRenderer.Render(_vm.BatteryPercent, _vm.Charging);
+        // Battery badge while a mouse is connected, the app logo otherwise.
+        _tray.Icon = _vm.IsConnected && _vm.BatteryPercent != null
+            ? TrayIconRenderer.Render(_vm.BatteryPercent, _vm.Charging)
+            : _appIcon;
         _tray.ToolTipText = _vm.IsConnected
             ? $"{_vm.ModelName} — {_vm.BatteryText}"
             : "ATK-OS — no mouse";
-        if (_window != null) _window.Icon = _tray.Icon;
     }
 
     private void ShowLowBattery(int percent) =>
@@ -74,7 +82,7 @@ public partial class App : Application
     {
         if (_window == null)
         {
-            _window = new MainWindow { DataContext = _vm, Icon = _tray?.Icon };
+            _window = new MainWindow { DataContext = _vm, Icon = _appIcon };
             // Closing the window keeps the app in the tray. The window is really closed
             // (not hidden) so its visuals can be freed; a new one is made on the next open.
             _window.Closed += (_, _) =>
@@ -83,6 +91,7 @@ public partial class App : Application
                 MemoryTrimmer.Trim();
             };
         }
+        if (_window.WindowState == WindowState.Minimized) _window.WindowState = WindowState.Normal;
         _window.Show();
         _window.Activate();
         // The DPI button on the mouse may have changed things while hidden.

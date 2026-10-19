@@ -9,6 +9,8 @@
     <BuiltInComInteropSupport>true</BuiltInComInteropSupport>
     <AvaloniaUseCompiledBindingsByDefault>true</AvaloniaUseCompiledBindingsByDefault>
     <ApplicationManifest>app.manifest</ApplicationManifest>
+    <ApplicationIcon>Assets\icon.ico</ApplicationIcon>
+    <AssemblyTitle>ATK-OS mouse settings</AssemblyTitle>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
 
     <!-- Keep the footprint small: this app idles in the tray all day. -->
@@ -25,6 +27,10 @@
     <!-- HidSharp is not annotated for trimming; it is rooted below, so its warning is expected. -->
     <NoWarn>$(NoWarn);IL2104</NoWarn>
   </PropertyGroup>
+
+  <ItemGroup>
+    <AvaloniaResource Include="Assets\icon.png" />
+  </ItemGroup>
 
   <ItemGroup>
     <TrimmerRootAssembly Include="HidSharp" />
