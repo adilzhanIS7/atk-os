@@ -53,6 +53,7 @@ Aliyun SDK, локальный express/socket.io-сервер.
 - ✅ Тесты с эмулятором мыши (`tests/`), включая пакеты, снятые с настоящей мыши.
 - ✅ Релизы: тег `v*` → GitHub Actions собирает 3 платформы и публикует Release.
 - ✅ Иконка (`assets/icon.svg`), одна копия приложения (mutex + named pipe), метаданные exe.
+- ✅ 1.0: установщики — Windows (Inno Setup), Linux .deb, macOS .dmg; CI ставит и удаляет каждый пакет.
 - TODO: подпись exe (SignPath Foundation — бесплатно для open source, нужна заявка владельца репо).
 - TODO: проверить палитру цветов на живой мыши (во время разработки мышь спала).
 - TODO: проверить на Linux и macOS (нужны тестеры).

@@ -1,0 +1,11 @@
+[Desktop Entry]
+Type=Application
+Name=ATK-OS
+GenericName=Mouse settings
+Comment=Settings for ATK / VXE / VGN mice
+Exec=atk-os
+Icon=atk-os
+Terminal=false
+Categories=Settings;HardwareSettings;Utility;
+Keywords=mouse;dpi;polling;battery;atk;vxe;vgn;
+StartupWMClass=atk-os

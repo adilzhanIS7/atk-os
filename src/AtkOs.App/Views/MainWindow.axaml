@@ -159,6 +159,11 @@
           <TextBlock Text="{Binding LowBatteryLabel}" VerticalAlignment="Center" />
           <ToggleSwitch Grid.Column="1" AutomationProperties.Name="Low battery alert" IsChecked="{Binding LowBatteryAlert}" OnContent="{x:Null}" OffContent="{x:Null}" MinWidth="0" />
         </Grid>
+        <Grid ColumnDefinitions="*,Auto">
+          <TextBlock Text="{Binding AppVersion}" Foreground="#6B7280" FontSize="12" VerticalAlignment="Center" />
+          <Button Grid.Column="1" Content="GitHub" Click="OpenProjectPage" Padding="10,3" FontSize="12"
+                  Background="Transparent" Foreground="#7EA6F5" />
+        </Grid>
       </StackPanel>
     </Border>
 

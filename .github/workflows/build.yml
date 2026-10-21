@@ -1,10 +1,16 @@
 name: build
 
+# Every push builds and tests the installers for all platforms.
+# Pushing a tag like v1.2.3 also publishes them as a GitHub Release.
 on:
   push:
     branches: [main]
+    tags: ['v*']
   pull_request:
   workflow_dispatch:
+
+permissions:
+  contents: write
 
 jobs:
   build:
@@ -14,7 +20,7 @@ jobs:
         include:
           - os: windows-latest
             rid: win-x64
-          - os: ubuntu-latest
+          - os: ubuntu-22.04 # older glibc, so the build runs on more distros
             rid: linux-x64
           - os: macos-latest
             rid: osx-arm64
@@ -27,32 +33,107 @@ jobs:
         with:
           global-json-file: global.json
 
+      - name: Version
+        shell: bash
+        run: |
+          if [[ "$GITHUB_REF" == refs/tags/v* ]]; then V="${GITHUB_REF_NAME#v}"
+          else V="$(sed -n 's:.*<Version>\(.*\)</Version>.*:\1:p' Directory.Build.props)"; fi
+          echo "VERSION=$V" >> "$GITHUB_ENV"
+          echo "PUB=out/publish" >> "$GITHUB_ENV"
+          echo "Version $V"
+
       - name: Install native toolchain (Linux)
         if: runner.os == 'Linux'
         run: sudo apt-get update && sudo apt-get install -y clang zlib1g-dev
 
-      - name: Build
-        run: dotnet build -c Release
-
       - name: Test
-        run: dotnet test -c Release --no-build
+        run: dotnet test -c Release
 
       # Native AOT: self-contained native executables, no .NET runtime needed.
-      - name: Publish app
-        run: dotnet publish src/AtkOs.App -c Release -r ${{ matrix.rid }} -o out/${{ matrix.rid }}
-
-      - name: Publish CLI
-        run: dotnet publish src/AtkOs.Cli -c Release -r ${{ matrix.rid }} -o out/${{ matrix.rid }}
-
-      - name: Clean up and add extras
+      - name: Publish
         shell: bash
         run: |
-          rm -f out/${{ matrix.rid }}/*.pdb out/${{ matrix.rid }}/*.dbg
-          rm -rf out/${{ matrix.rid }}/*.dSYM
-          if [ "$RUNNER_OS" = "Linux" ]; then cp packaging/linux/70-atk-os.rules out/${{ matrix.rid }}/; fi
-          ls -la out/${{ matrix.rid }}
+          dotnet publish src/AtkOs.App -c Release -r ${{ matrix.rid }} -p:Version=$VERSION -o "$PUB"
+          dotnet publish src/AtkOs.Cli -c Release -r ${{ matrix.rid }} -p:Version=$VERSION -o "$PUB"
+          rm -f "$PUB"/*.pdb "$PUB"/*.dbg
+          rm -rf "$PUB"/*.dSYM
+          cp README.md LICENSE "$PUB"/
+          mkdir -p dist
+          ls -la "$PUB"
+
+      # ---------- Windows: installer + portable zip ----------
+      - name: Windows installer
+        if: runner.os == 'Windows'
+        shell: pwsh
+        run: |
+          $iscc = "${env:ProgramFiles(x86)}\Inno Setup 6\ISCC.exe"
+          if (-not (Test-Path $iscc)) { choco install innosetup -y --no-progress | Out-Null }
+          & $iscc /Q "/DAppVersion=$env:VERSION" "/DSourceDir=$PWD\$env:PUB" "/DOutputDir=$PWD\dist" packaging\windows\atk-os.iss
+          if ($LASTEXITCODE) { exit 1 }
+          Compress-Archive -Path "$env:PUB\*" -DestinationPath "dist\atk-os-$env:VERSION-win-x64-portable.zip"
+
+      - name: Test Windows installer
+        if: runner.os == 'Windows'
+        shell: pwsh
+        run: |
+          $dir = "$env:RUNNER_TEMP\atk-os"
+          Start-Process "dist\ATK-OS-Setup-$env:VERSION-x64.exe" -ArgumentList '/VERYSILENT','/SUPPRESSMSGBOXES',"/DIR=$dir" -Wait
+          & "$dir\atkctl.exe" list
+          if (-not (Test-Path "$dir\atk-os.exe")) { throw "app not installed" }
+          Start-Process "$dir\unins000.exe" -ArgumentList '/VERYSILENT','/SUPPRESSMSGBOXES' -Wait
+          Start-Sleep 3
+          if (Test-Path "$dir\atk-os.exe") { throw "app not removed" }
+
+      # ---------- Linux: .deb + tar.gz ----------
+      - name: Linux packages
+        if: runner.os == 'Linux'
+        run: |
+          bash packaging/linux/build-deb.sh "$VERSION" "$PUB" dist
+          cp packaging/linux/70-atk-os.rules "$PUB"/
+          tar -czf "dist/atk-os-$VERSION-linux-x64.tar.gz" --transform "s,^publish,atk-os-$VERSION," -C out publish
+
+      - name: Test .deb
+        if: runner.os == 'Linux'
+        run: |
+          sudo apt-get install -y "./dist/atk-os_${VERSION}_amd64.deb"
+          atkctl list
+          test -x /usr/bin/atk-os
+          test -f /usr/lib/udev/rules.d/70-atk-os.rules
+          sudo apt-get remove -y atk-os
+          test ! -e /usr/bin/atk-os
+
+      # ---------- macOS: .dmg with ATK-OS.app ----------
+      - name: macOS disk image
+        if: runner.os == 'macOS'
+        run: |
+          bash packaging/macos/build-dmg.sh "$VERSION" "$PUB" dist
+          hdiutil attach "dist/ATK-OS-$VERSION-macos-arm64.dmg" -mountpoint /tmp/atk-os-dmg
+          codesign --verify --deep /tmp/atk-os-dmg/ATK-OS.app
+          /tmp/atk-os-dmg/ATK-OS.app/Contents/MacOS/atkctl list
+          hdiutil detach /tmp/atk-os-dmg
 
       - uses: actions/upload-artifact@v4
         with:
           name: atk-os-${{ matrix.rid }}
-          path: out/${{ matrix.rid }}
+          path: dist/*
+
+  release:
+    needs: build
+    if: startsWith(github.ref, 'refs/tags/v')
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/download-artifact@v4
+        with:
+          path: dist
+          merge-multiple: true
+
+      - name: Checksums
+        run: cd dist && sha256sum * > SHA256SUMS.txt && cat SHA256SUMS.txt
+
+      - uses: softprops/action-gh-release@v2
+        with:
+          name: ATK-OS ${{ github.ref_name }}
+          body_path: packaging/release-notes.md
+          files: dist/*

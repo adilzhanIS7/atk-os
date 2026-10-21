@@ -1,3 +1,4 @@
+using System.Reflection;
 using System.Collections.ObjectModel;
 using AtkOs.App.Services;
 using AtkOs.Core;
@@ -163,6 +164,10 @@ public partial class MainViewModel : ObservableObject
     public event Action<int>? LowBattery;
 
     public bool AutostartSupported => Autostart.IsSupported;
+    public string AppVersion { get; } = "ATK-OS " + (typeof(MainViewModel).Assembly
+        .GetCustomAttribute<AssemblyInformationalVersionAttribute>()?.InformationalVersion
+        .Split('+')[0] ?? "dev");
+
     public string LowBatteryLabel => $"Low battery alert (below {_settings.LowBatteryThreshold}%)";
 
     [ObservableProperty] private bool _startWithSystem = Autostart.IsEnabled();

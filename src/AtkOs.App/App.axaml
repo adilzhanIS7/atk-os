@@ -3,7 +3,13 @@
              x:Class="AtkOs.App.App"
              RequestedThemeVariant="Dark">
   <Application.Styles>
-    <FluentTheme />
+    <!-- Fixed blue accent instead of the system one, so switches match the buttons. -->
+    <FluentTheme>
+      <FluentTheme.Palettes>
+        <ColorPaletteResources x:Key="Dark" Accent="#3A6FD8" />
+        <ColorPaletteResources x:Key="Light" Accent="#3A6FD8" />
+      </FluentTheme.Palettes>
+    </FluentTheme>
 
     <!-- Card container -->
     <Style Selector="Border.card">

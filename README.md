@@ -1,42 +1,64 @@
-<p align="center"><img src="assets/icon.png" width="128" alt="ATK-OS icon"></p>
+<p align="center"><img src="assets/icon.png" width="112" alt="ATK-OS icon"></p>
 
-# ATK-OS
+<h1 align="center">ATK-OS</h1>
 
-Lightweight, open-source configuration tool for ATK / VXE / VGN gaming mice —
-an alternative to the official **ATK V HUB** app.
+<p align="center">
+  Lightweight, open-source settings app for ATK / VXE / VGN gaming mice —<br>
+  an alternative to the official <b>ATK V HUB</b>.
+</p>
+
+<p align="center">
+  <a href="https://github.com/adilzhanIS7/atk-os/releases/latest"><img src="https://img.shields.io/github/v/release/adilzhanIS7/atk-os?label=download" alt="Latest release"></a>
+  <a href="https://github.com/adilzhanIS7/atk-os/actions/workflows/build.yml"><img src="https://github.com/adilzhanIS7/atk-os/actions/workflows/build.yml/badge.svg" alt="Build"></a>
+  <a href="LICENSE"><img src="https://img.shields.io/github/license/adilzhanIS7/atk-os" alt="MIT license"></a>
+  <img src="https://img.shields.io/badge/platform-Windows%20%7C%20Linux%20%7C%20macOS-3A6FD8" alt="Platforms">
+</p>
+
+<p align="center"><img src="assets/screenshot.png" width="380" alt="ATK-OS window"></p>
 
 > Unofficial project. Not affiliated with ATK, VXE or VGN.
 
 The official app is an Electron bundle of ~430 MB with analytics and a built-in web server.
 ATK-OS is a small native app in the spirit of [G-Helper](https://github.com/seerge/g-helper):
-it sits in the tray, shows the battery level on its icon, and talks to the mouse directly over HID.
+it sits in the tray, shows the battery level on its icon, and talks to the mouse directly over USB HID.
 No telemetry, no accounts, no network.
 
 |  | ATK V HUB | ATK-OS |
 |---|---|---|
-| Download size | ~430 MB | ~45 MB |
-| Memory, idle in tray | hundreds of MB | ~5–7 MB |
-| Needs a runtime | bundled Chromium | no (native AOT) |
+| Download | ~430 MB | ~15 MB installer |
+| Memory, idle in tray | Chromium + Node.js | ~5 MB |
+| Runtime | bundled Chromium | none (native AOT) |
+| Telemetry | Sentry, analytics | none |
 
 ## Download
 
-Get the latest build for Windows, Linux or macOS from
-[Releases](https://github.com/adilzhanIS7/atk-os/releases). No .NET installation needed.
+Get the latest version from [Releases](https://github.com/adilzhanIS7/atk-os/releases/latest):
 
-Only one copy runs at a time: launching `atk-os` again just opens the window of the running copy.
+| System | File | |
+|---|---|---|
+| **Windows 10/11** | `ATK-OS-Setup-<version>-x64.exe` | installer: Start menu, autostart, uninstaller |
+| | `atk-os-<version>-win-x64-portable.zip` | portable, no installation |
+| **Linux** (Ubuntu, Debian, Mint, Pop!_OS…) | `atk-os_<version>_amd64.deb` | `sudo apt install ./atk-os_*.deb` |
+| **Linux** (other distros) | `atk-os-<version>-linux-x64.tar.gz` | see [Linux](#linux) |
+| **macOS 11+** (Apple Silicon) | `ATK-OS-<version>-macos-arm64.dmg` | drag ATK-OS to Applications |
+
+The installer does not need administrator rights: it installs for the current user.
+Only one copy of the app runs at a time; launching it again opens the existing window.
 
 ### "Windows protected your PC"
 
-The builds are not code-signed yet, so on first launch Windows SmartScreen may show this warning
-for a new download. Click **More info → Run anyway**. The app is built from this repository by
-GitHub Actions; you can compare the file with `SHA256SUMS.txt` from the release:
+The builds are not code-signed yet, so Windows SmartScreen may show this warning for a new download.
+Click **More info → Run anyway**. Every file is built from this repository by GitHub Actions;
+checksums are in `SHA256SUMS.txt` next to the downloads:
 
-```
-Get-FileHash .\atk-os-v0.1.1-win-x64.zip
+```powershell
+Get-FileHash .\ATK-OS-Setup-1.0.0-x64.exe
 ```
 
-The warning goes away once the release has been downloaded enough times or after the builds are
-signed (planned through the free [SignPath Foundation](https://signpath.org) program for open-source projects).
+### macOS first launch
+
+The app is not notarized by Apple. On first launch, right-click **ATK-OS** in Applications → **Open**,
+or run `xattr -dr com.apple.quarantine /Applications/ATK-OS.app` once.
 
 ## Features
 
@@ -47,7 +69,6 @@ signed (planned through the free [SignPath Foundation](https://signpath.org) pro
 - Polling rate (125 Hz – 8 kHz, depending on the receiver)
 - Lift-off distance, button debounce
 - Motion sync, angle snapping, ripple control
-- Windows, Linux, macOS (Avalonia UI)
 - `atkctl` command-line tool for scripting and diagnostics
 
 Every change is read back from the mouse to make sure it was stored.
@@ -60,12 +81,9 @@ Firmware updates are intentionally **not** supported.
 | VGN Dragonfly R1 SE+ | 2.4 GHz receiver | `373B:1085` | ✅ tested |
 | Compx-based mice (Dragonfly F1 / R1, Blazing Sky, MAD R, …) | receiver / wired | `373B:*`, `3554:*` | ❓ should work, needs testers |
 
-If you have another model, run `atkctl info -v` and open an issue with the output.
+Have another model? Run `atkctl info -v` and [open an issue](https://github.com/adilzhanIS7/atk-os/issues) with the output.
 
-## Usage
-
-Run `atk-os` — the window opens and the app stays in the tray when closed.
-Start with `atk-os --tray` to go straight to the tray (useful for autostart).
+## Command line
 
 ```
 atkctl list                      list detected devices
@@ -79,16 +97,19 @@ atkctl set debounce 4            button debounce, ms
 atkctl set motionsync on         also: anglesnap, ripple
 ```
 
-### Linux
+`atk-os --tray` starts the app hidden in the tray (this is what autostart uses).
 
-Install the udev rule so the app can access the mouse without root:
+## Linux
+
+The `.deb` package installs everything, including a udev rule that lets the logged-in user access
+the mouse without root. Re-plug the receiver after installing.
+
+With the `.tar.gz`, install the rule by hand:
 
 ```
-sudo cp packaging/linux/70-atk-os.rules /etc/udev/rules.d/
+sudo cp 70-atk-os.rules /etc/udev/rules.d/
 sudo udevadm control --reload-rules && sudo udevadm trigger
 ```
-
-Then re-plug the receiver.
 
 ## Building
 
@@ -103,23 +124,25 @@ dotnet run --project src/AtkOs.App
 The tests run the protocol code against an emulated mouse, so no hardware is needed.
 They include packets captured from a real mouse.
 
-Native release build (needs the platform C/C++ toolchain: Visual Studio Build Tools
+Native build (needs the platform C/C++ toolchain: Visual Studio Build Tools
 with "Desktop development with C++" on Windows, clang on Linux, Xcode on macOS):
 
 ```
 dotnet publish src/AtkOs.App -c Release -r win-x64 -o out
 ```
 
-Project layout:
+Installers are built by [GitHub Actions](.github/workflows/build.yml) on every push
+(scripts in [`packaging/`](packaging)). Pushing a tag like `v1.2.0` publishes a release.
 
-- `src/AtkOs.Core` — protocol and HID transport (no UI)
-- `src/AtkOs.App` — Avalonia tray app
-- `src/AtkOs.Cli` — `atkctl`
-- `tests/AtkOs.Core.Tests` — tests with an emulated mouse
-- `docs/PROTOCOL.md` — protocol notes
-
-Releases: push a tag like `v0.2.0`; GitHub Actions builds all platforms and publishes the release.
+| Path | |
+|---|---|
+| `src/AtkOs.Core` | protocol and HID transport (no UI) |
+| `src/AtkOs.App` | Avalonia tray app |
+| `src/AtkOs.Cli` | `atkctl` |
+| `tests/AtkOs.Core.Tests` | tests with an emulated mouse |
+| `docs/PROTOCOL.md` | protocol notes |
+| `packaging/` | Windows installer (Inno Setup), `.deb`, macOS `.dmg` |
 
 ## License
 
-MIT
+[MIT](LICENSE)
