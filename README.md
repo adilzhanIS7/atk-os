@@ -143,6 +143,22 @@ Installers are built by [GitHub Actions](.github/workflows/build.yml) on every p
 | `docs/PROTOCOL.md` | protocol notes |
 | `packaging/` | Windows installer (Inno Setup), `.deb`, macOS `.dmg` |
 
+## Code signing policy
+
+Free code signing for Windows builds is provided by [SignPath.io](https://about.signpath.io),
+certificate by [SignPath Foundation](https://signpath.org).
+
+- Committers and reviewers: [@adilzhanIS7](https://github.com/adilzhanIS7)
+- Approvers: [@adilzhanIS7](https://github.com/adilzhanIS7)
+
+Only builds made by GitHub Actions from this repository are signed. Every release is approved manually.
+
+## Privacy
+
+This program will not transfer any information to other networked systems unless specifically
+requested by the user or the person installing or operating it. It talks only to the mouse over USB;
+settings are stored locally (`%APPDATA%\atk-os` on Windows, `~/.config/atk-os` on Linux and macOS).
+
 ## License
 
 [MIT](LICENSE)
