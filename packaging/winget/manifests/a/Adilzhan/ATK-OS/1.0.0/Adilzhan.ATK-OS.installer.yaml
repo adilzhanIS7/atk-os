@@ -1,0 +1,15 @@
+# yaml-language-server: $schema=https://aka.ms/winget-manifest.installer.1.6.0.schema.json
+PackageIdentifier: Adilzhan.ATK-OS
+PackageVersion: 1.0.0
+InstallerType: inno
+Scope: user
+InstallModes:
+  - interactive
+  - silent
+UpgradeBehavior: install
+Installers:
+  - Architecture: x64
+    InstallerUrl: https://github.com/adilzhanIS7/atk-os/releases/download/v1.0.0/ATK-OS-Setup-1.0.0-x64.exe
+    InstallerSha256: 5DC733C48904AC02AB4C5015603472D4AD8948C3D86B8EA16D0D15A0880A3142
+ManifestType: installer
+ManifestVersion: 1.6.0
